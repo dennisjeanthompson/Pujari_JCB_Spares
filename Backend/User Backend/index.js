@@ -113,4 +113,21 @@ app.get('/login/:email/:password', async (req, res) => {
     }
 })
 
+// delete user
+app.delete('/deleteUser/:email', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = await client.db('Pujari_JCB_Spares')
+        await db.collection('All_Users').deleteOne({ email: req.params.email })
+        await db.collection('Orders').deleteMany({ email: req.params.email })
+        res.status(200).send({ message: 'user deleted' })
+    }
+    catch (error) {
+        res.status(400).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
 app.listen(port, () => { console.log(`App listening on ${port}`) })
