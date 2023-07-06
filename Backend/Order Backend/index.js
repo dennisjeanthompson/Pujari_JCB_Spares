@@ -54,12 +54,30 @@ app.get('/getOrders/:email', async (req, res) => {
     try {
         const db = await client.db('Pujari_JCB_Spares')
         let order = await db.collection('Orders').aggregate([{ $match: { email: req.params.email } }]).toArray()
-        if (order.length!==0) {
+        if (order.length !== 0) {
             res.status(200).send(order)
         }
         else {
             res.send({ message: 'No order placed' })
         }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
+// cancle order
+app.delete('/cancleOrder/:orderId', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = await client.db('Pujari_JCB_Spares')
+        let order = await db.collection('Orders').deleteOne({ _id: mongodb.ObjectId(req.params.orderId) })
+        res.status(200).send({message:'order cancelled'})
+        
     }
     catch (error) {
         console.log(error);
