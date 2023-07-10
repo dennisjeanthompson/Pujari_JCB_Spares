@@ -1,5 +1,10 @@
 # Pujari JCB Spares
 
+- Technologies used:
+  - Frontend: React.js
+  - Backend: Node.js
+  - Database: MongoDB
+  
 - Specifications:
   - Pujari JCB Spares allows users to login, register and update profile
   - User is able to see JCB spare parts and order them
