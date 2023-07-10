@@ -2,6 +2,12 @@
 
 An e-commerce website to order JCB spare parts
 
+- Frontend deployed URL: https://pujari-jcb-spares.netlify.app/
+
+- Backend deployed URL:
+  - For users: https://pujari-jcb-spares-user.onrender.com
+  - For orders: https://pujari-jcb-spares-order.onrender.com
+
 - Technologies used:
   - Frontend: React.js
   - Backend: Node.js
@@ -15,9 +21,3 @@ An e-commerce website to order JCB spare parts
   - Admin page:
     - Admin can see all registered users and have permission to delete the user
     - Also admin can see the order details ordered by various users and have permission to cancle the order
-
-- Frontend deployed URL: https://pujari-jcb-spares.netlify.app/
-
-- Backend deployed URL:
-  - For users: https://pujari-jcb-spares-user.onrender.com
-  - For orders: https://pujari-jcb-spares-order.onrender.com
