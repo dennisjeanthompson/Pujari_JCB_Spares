@@ -1,5 +1,7 @@
 # Pujari JCB Spares
 
+An e-commerce website to order JCB spare parts
+
 - Technologies used:
   - Frontend: React.js
   - Backend: Node.js
