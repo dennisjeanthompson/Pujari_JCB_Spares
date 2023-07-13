@@ -18,12 +18,14 @@ app.get('/', async (req, res) => {
             let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
             res.status(200).send(user)
         }
-        let allUsers = await db.collection('All_Users').aggregate([]).toArray()
-        if (allUsers.length !== 0) {
-            res.status(200).send(allUsers)
-        }
         else {
-            res.send({ message: "No Users Found" })
+            let allUsers = await db.collection('All_Users').aggregate([]).toArray()
+            if (allUsers.length) {
+                res.status(200).send(allUsers)
+            }
+            else {
+                res.send({ message: "No Users Found" })
+            }
         }
     }
     catch (error) {
