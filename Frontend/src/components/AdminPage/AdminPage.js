@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 
 function AdminPage() {
     let [users, setUsers] = useState([])
-    let [userData, setUserData] = useState([])
+    // let [userData, setUserData] = useState([])
     let [open, setOpen] = useState(false)
     let [orders, setOrders] = useState([])
     let [message, setMessage] = useState("")
