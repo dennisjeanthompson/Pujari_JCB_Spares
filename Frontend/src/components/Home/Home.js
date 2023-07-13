@@ -8,15 +8,13 @@ function Home() {
   let navigate = useNavigate()
   let [allProducts, setAllProducts] = useState([])
 
-    axios.get('https://63c91acb320a0c4c9540abbc.mockapi.io/Products')
-      .then((response) => {
-        setAllProducts(response.data)
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-
-
+  axios.get('https://pujari-jcb-spares-order.onrender.com/getAllProducts')
+    .then((response) => {
+      setAllProducts(response.data)
+    })
+    .catch((error) => {
+      console.log(error);
+    })
 
   function viewMoreClick(product) {
     sessionStorage.setItem('product', JSON.stringify(product))
@@ -32,7 +30,7 @@ function Home() {
       <Navbar myProfile={true} logout={true} home={false} />
 
       <div className='mt-4'>
-        <div className=' p-3' style={{ display: 'grid', justifyContent:'center', gridTemplateColumns: 'auto auto auto auto', gridGap: '50px' }}>
+        <div className=' p-3' style={{ display: 'grid', justifyContent: 'center', gridTemplateColumns: 'auto auto auto auto', gridGap: '50px' }}>
           {
             allProducts.length ? allProducts.map((e, i) => {
               return (<div key={i} className="card" style={{ width: '18rem' }}>
