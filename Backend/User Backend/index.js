@@ -10,7 +10,7 @@ const client = new MongoClient(dbUrl)
 const port = 6500
 
 // getting all users
-app.get('/', async (req, res) => {
+app.get('', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = await client.db('Pujari_JCB_Spares')
