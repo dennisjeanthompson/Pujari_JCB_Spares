@@ -9,19 +9,71 @@ const dbUrl = 'mongodb+srv://rohit10231:rohitkaranpujari@cluster0.kjynvxt.mongod
 const client = new MongoClient(dbUrl)
 const port = 7500
 
-// getting all users order information
-app.get('/', async (req, res) => {
+// get all products
+app.get('/getAllProducts', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = await client.db('Pujari_JCB_Spares')
-        let orders = await db.collection('Orders').aggregate([{ $sort: { date: -1 } }]).toArray()
-        // find().toArray()
-        if (orders.length !== 0) {
-            res.status(200).send(orders)
+        let allProducts = await db.collection('All_Products').find().toArray()
+        res.status(200).send(allProducts)
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
+// getting all order information
+app.get('/', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        let orders
+        const db = await client.db('Pujari_JCB_Spares')
+        if (req.query.email !== '' && req.query.productName === '') {
+            orders = await db.collection('Orders').aggregate([{ $match: { email: req.query.email } }]).toArray()
+            if (orders.length) {
+                res.status(200).send(orders)
+            }
+            else {
+                res.send({ message: "No orders placed yet !" })
+            }
+        }
+        else if (req.query.email === '' && req.query.productName !== '') {
+            orders = await db.collection('Orders').aggregate([{ $match: { name: req.query.productName } }]).toArray()
+            if (orders.length) {
+                res.status(200).send(orders)
+            }
+            else {
+                res.send({ message: "No orders placed yet !" })
+            }
+        }
+        else if (req.query.email !== '' && req.query.productName !== '') {
+            orders = await db.collection('Orders').aggregate([{ $match: { email: req.query.email, name: req.query.productName } }]).toArray()
+            if (orders.length) {
+                res.status(200).send(orders)
+            }
+            else {
+                res.send({ message: "No orders placed yet !" })
+            }
         }
         else {
-            res.send({ message: "No orders placed yet !" })
+            orders = await db.collection('Orders').aggregate([{ $sort: { date: -1 } }]).toArray()
+            if (orders.length) {
+                res.status(200).send(orders)
+            }
+            else {
+                res.send({ message: "No orders placed yet !" })
+            }
         }
+        // if (orders.length) {
+        //     res.status(200).send(orders)
+        // }
+        // else {
+        //     res.send({ message: "No orders placed yet !" })
+        // }
     }
     catch (error) {
         console.log(error);
@@ -37,9 +89,9 @@ app.post('/newOrder', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = await client.db('Pujari_JCB_Spares')
-        req.body.price =  parseInt(req.body.price)
-        req.body.orderId =  parseInt(req.body.orderId)
-        req.body.quantity =  parseInt(req.body.quantity)
+        req.body.price = parseInt(req.body.price)
+        req.body.orderId = parseInt(req.body.orderId)
+        req.body.quantity = parseInt(req.body.quantity)
         await db.collection('Orders').insertOne(req.body)
         res.status(201).send({ message: 'Order placed', data: req.body })
     }
@@ -58,7 +110,7 @@ app.get('/getOrders/:email', async (req, res) => {
     try {
         const db = await client.db('Pujari_JCB_Spares')
         let order = await db.collection('Orders').aggregate([{ $match: { email: req.params.email } }]).toArray()
-        if (order.length !== 0) {
+        if (order.length) {
             res.status(200).send(order)
         }
         else {
