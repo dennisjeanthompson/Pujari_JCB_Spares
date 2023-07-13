@@ -14,7 +14,11 @@ app.get('/', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = await client.db('Pujari_JCB_Spares')
-        let allUsers = await db.collection('All_Users').find().toArray()
+        if (req.query.email) {
+            let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
+            res.status(200).send(user)
+        }
+        let allUsers = await db.collection('All_Users').aggregate([]).toArray()
         if (allUsers.length !== 0) {
             res.status(200).send(allUsers)
         }
