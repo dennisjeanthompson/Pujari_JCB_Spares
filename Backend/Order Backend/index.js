@@ -37,8 +37,9 @@ app.post('/newOrder', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = await client.db('Pujari_JCB_Spares')
-        req.body.price = parseInt(req.body.price)
-        req.body.quantity = parseInt(req.body.quantity)
+        req.body.price = await parseInt(req.body.price)
+        req.body.orderId = await parseInt(req.body.orderId)
+        req.body.quantity = await parseInt(req.body.quantity)
         await db.collection('Orders').insertOne(req.body)
         res.status(201).send({ message: 'Order placed', data: req.body })
     }
