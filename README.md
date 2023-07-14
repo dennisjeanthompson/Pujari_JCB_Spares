@@ -20,6 +20,6 @@ An e-commerce website to order JCB spare parts
   
   - Admin page:
     - Admin can see all registered users and have permission to delete the user
-    - Also admin can see the order details ordered by various users and have permission to cancle the order
     - Search option for a particular user
+    - Also admin can see the order details ordered by various users and have permission to cancle the order
     - Search functionality for orders with respect to date and user name
