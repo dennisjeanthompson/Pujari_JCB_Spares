@@ -30,10 +30,15 @@ app.get('/getAllProducts', async (req, res) => {
 app.get('/', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        let orders
+        let email = req.query.email
+        let startDateTime = req.query.startDateTime
+        let endDateTime = req.query.endDateTime
+        
         const db = await client.db('Pujari_JCB_Spares')
-        if (req.query.email !== '' && req.query.productName === '') {
-            orders = await db.collection('Orders').aggregate([{ $match: { email: req.query.email } }]).toArray()
+
+        if (email !== '' && startDateTime === '' && endDateTime === '') {
+            console.log('case 1');
+            let orders = await db.collection('Orders').aggregate([{ $match: { email: email } }]).toArray()
             if (orders.length) {
                 res.status(200).send(orders)
             }
@@ -41,8 +46,8 @@ app.get('/', async (req, res) => {
                 res.send({ message: "No orders placed yet !" })
             }
         }
-        else if (req.query.email === '' && req.query.productName !== '') {
-            orders = await db.collection('Orders').aggregate([{ $match: { name: req.query.productName } }]).toArray()
+        else if (email === '' && startDateTime !== '' && endDateTime !== '') {
+            let orders = await db.collection('Orders').aggregate([{ $match: { date: { $gte: startDateTime, $lte: endDateTime } } }]).toArray()
             if (orders.length) {
                 res.status(200).send(orders)
             }
@@ -50,8 +55,8 @@ app.get('/', async (req, res) => {
                 res.send({ message: "No orders placed yet !" })
             }
         }
-        else if (req.query.email !== '' && req.query.productName !== '') {
-            orders = await db.collection('Orders').aggregate([{ $match: { email: req.query.email, name: req.query.productName } }]).toArray()
+        else if (email !== '' && startDateTime !== '' && endDateTime !== '') {
+            let orders = await db.collection('Orders').aggregate([{ $match: { email: email, date: { $gte: startDateTime, $lte: req.query.endDateTime } } }]).toArray()
             if (orders.length) {
                 res.status(200).send(orders)
             }
@@ -60,7 +65,7 @@ app.get('/', async (req, res) => {
             }
         }
         else {
-            orders = await db.collection('Orders').aggregate([{ $sort: { date: -1 } }]).toArray()
+            let orders = await db.collection('Orders').aggregate([{ $sort: { date: -1 } }]).toArray()
             if (orders.length) {
                 res.status(200).send(orders)
             }
