@@ -18,6 +18,9 @@ function AdminPage() {
     let orderStartDateTime = ''
     let orderEndDateTime = ''
 
+    // let pendingOrders = orders.length ? orders.filter((e) => e.delivered === false) : ''
+    // let deliveredOrders = orders.length ? orders.filter((e) => e.delivered === true) : ''
+
     useEffect(() => {
         console.log('sdsd');
         axios.get('https://pujari-jcb-spares-user.onrender.com')
@@ -213,10 +216,10 @@ function AdminPage() {
                         <div className="col" style={{ marginTop: '3px', maxWidth: 'fit-content' }} >
                             <button type="button" id='sumbitbutton' className="btn btn-outline-primary btn-sm" onClick={() => { findUserClick() }}>Search</button>
                         </div>
-                        <div className="col" style={{ maxWidth: 'fit-content' }}>
-                            <p className='btn border' title='Refresh' style={{ paddingTop: '5px' }} onClick={() => { refreshUsersClick() }}><i className="fa-solid fa-rotate fs-5"></i></p>
+                        <div className="col" style={{ marginTop: '3px', maxWidth: 'fit-content' }}>
+                            <p className='btn border' title='Refresh' style={{ color: 'green' }} onClick={() => { refreshUsersClick() }}><i className="fa-solid fa-rotate fs-5"></i></p>
                         </div>
-                        <div className="col" style={{marginTop: '3px'}}>
+                        <div className="col" style={{ marginTop: '3px' }}>
                             <button className='btn btn-sm border border-primary text-primary' onClick={() => { downloadExcelSheet('usersDataTable', 'Users') }}>Download Excel Sheet</button>
                         </div>
                     </div>
@@ -271,9 +274,9 @@ function AdminPage() {
                             <button type="button" id='sumbitbutton' className="btn btn-outline-primary btn-sm" onClick={() => { findOrderClick() }}>Search</button>
                         </div>
                         <div className="col" style={{ marginTop: '3px', maxWidth: 'fit-content' }}>
-                            <p className='btn btn-sm border border-primary' title='Refresh' style={{color:'green' }} onClick={() => { refreshOrdersClick() }}><i className="fa-solid fa-rotate fs-5"></i></p>
+                            <p className='btn btn-sm border border-primary' title='Refresh' style={{ color: 'green' }} onClick={() => { refreshOrdersClick() }}><i className="fa-solid fa-rotate fs-5"></i></p>
                         </div>
-                        <div className="col" style={{marginTop: '3px'}}>
+                        <div className="col" style={{ marginTop: '3px' }}>
                             <button className='btn btn-sm border border-primary text-primary' onClick={() => { downloadExcelSheet('pendingOrdersTable', 'Pending Orders Report') }}>Download Excel Sheet</button>
                         </div>
                     </div>
