@@ -128,17 +128,18 @@ app.post('/sendEmail', async (req, res) => {
     }
     let orderDate = new Date(req.body.date).toLocaleString()
     let expectedDeliveryDate = new Date(new Date(req.body.date).setDate(new Date(req.body.date).getDate() + 4)).toLocaleDateString()
-    const emailInfo = {
+    console.log(req.body);
+    const emailData = {
         text: `Congratulations, Your order has been placed. You'll get your product within four days. Thank You !`,
-        userName: 'req.body.userName',
-        productName: 'req.body.name',
-        quantity: 'req.body.quantity',
-        price: 'req.body.price',
-        address: 'req.body.address',
+        userName: req.body.userName,
+        productName: req.body.name,
+        quantity: req.body.quantity,
+        price: req.body.price,
+        address: req.body.address,
         orderDate: orderDate,
         expectedDeliveryDate: expectedDeliveryDate
     }
-    console.log(emailInfo);
+    // console.log(emailData);
     const transporter = await nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -149,7 +150,7 @@ app.post('/sendEmail', async (req, res) => {
 
     let info = await transporter.sendMail({
         from: '"Pujari JCB Spares" <pujarijcbspares@gmail.com>', // sender address
-        to: req.body.userEmail, // list of receivers
+        to: req.body.email, // list of receivers
         subject: "Order Placed !!", // Subject line
         html: `<b>Congratulations, Your order has been placed with order Id order_${orderId}. You'll get your product within 5 days.<br/><br/>Thank You !<br/><br/>Regards,<br/>Pujari JCB Spares<br/><br/>Following are the details of order:</b><br/><br/>
             <table style="border: 3px solid white">
@@ -158,7 +159,7 @@ app.post('/sendEmail', async (req, res) => {
                         <tr>
                             <td>Sr. No</td>
                             <td>User name</td>
-                            <td>ProductName</td>
+                            <td>Product Name</td>
                             <td>Quantity</td>
                             <td>Price</td>
                             <td>Address</td>
@@ -170,19 +171,19 @@ app.post('/sendEmail', async (req, res) => {
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td>${emailInfo.userName}</td>
-                        <td${emailInfo.productName}</td>
-                        <td>${emailInfo.quantity}</td>
-                        <td>${emailInfo.price}</td>
-                        <td>${emailInfo.address}</td>
-                        <td>${emailInfo.orderDate}</td>
-                        <td>${emailInfo.expectedDeliveryDate}</td>
+                        <td>${emailData.userName}</td>
+                        <td>${emailData.productName}</td>
+                        <td>${emailData.quantity}</td>
+                        <td>${emailData.price}</td>
+                        <td>${emailData.address}</td>
+                        <td>${emailData.orderDate}</td>
+                        <td>${emailData.expectedDeliveryDate}</td>
                     </tr>
                 </tbody>
             </table>`
     })
 
-    console.log("Message sent: %s", info.messageId);
+    console.log("Message sent: ", info.messageId);
     res.json(info)
 })
 
