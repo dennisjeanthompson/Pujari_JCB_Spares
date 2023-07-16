@@ -71,7 +71,7 @@ app.get('/', async (req, res) => {
         }
 
         // all orders
-        else {
+        else if (email === '' && startDateTime === '' && endDateTime === '') {
             let orders = await db.collection('Orders').aggregate([{ $sort: { date: -1 } }]).toArray()
             if (orders.length) {
                 res.status(200).send(orders)
@@ -80,12 +80,6 @@ app.get('/', async (req, res) => {
                 res.send({ message: "No orders placed yet !" })
             }
         }
-        // if (orders.length) {
-        //     res.status(200).send(orders)
-        // }
-        // else {
-        //     res.send({ message: "No orders placed yet !" })
-        // }
     }
     catch (error) {
         console.log(error);
@@ -136,7 +130,7 @@ app.post('/sendEmail', async (req, res) => {
     let expectedDeliveryDate = new Date(new Date(req.body.date).setDate(new Date(req.body.date).getDate() + 4)).toLocaleDateString()
     const emailInfo = {
         text: `Congratulations, Your order has been placed. You'll get your product within four days. Thank You !`,
-        productReceiverName: 'req.body.userName',
+        userName: 'req.body.userName',
         productName: 'req.body.name',
         quantity: 'req.body.quantity',
         price: 'req.body.price',
@@ -163,7 +157,7 @@ app.post('/sendEmail', async (req, res) => {
                     <th>
                         <tr>
                             <td>Sr. No</td>
-                            <td>Product receiver name</td>
+                            <td>User name</td>
                             <td>ProductName</td>
                             <td>Quantity</td>
                             <td>Price</td>
@@ -176,7 +170,7 @@ app.post('/sendEmail', async (req, res) => {
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td>${emailInfo.productReceiverName}</td>
+                        <td>${emailInfo.userName}</td>
                         <td${emailInfo.productName}</td>
                         <td>${emailInfo.quantity}</td>
                         <td>${emailInfo.price}</td>
