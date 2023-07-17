@@ -24,3 +24,4 @@ An e-commerce website to order JCB spare parts
     - Also admin can see the order details ordered by various users and have permission to cancle the order
     - Search functionality for orders with respect to date and user name
     - Excel sheet download functionality
+    - Email acknowledgement after getting order placed
