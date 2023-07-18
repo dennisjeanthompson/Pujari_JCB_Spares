@@ -227,37 +227,35 @@ app.delete('/cancleOrder/:orderId', async (req, res) => {
     }
 })
 
-// setInterval(async function (req, res) {
-//     let serviceRunDate = new Date().getDate()
-//     const client = await MongoClient.connect(dbUrl)
-//     try {
-//         const db = await client.db('Pujari_JCB_Spares')
-//         let orders = await db.collection('Orders').find({}).toArray()
-//         if (orders.length) {
-//             orders.forEach((order) => {
-//                 let orderDate = new Date(order.date).getDate()
-//                 let dateDiff = serviceRunDate - orderDate;
-//                 if (dateDiff > 1) { // 3
-//                     // change delivered status to true
-//                     let status = {
-//                         delivered: true
-//                     }
-//                     db.collection('Orders').updateOne({ orderId: order.orderId }, { $set: status })
-//                 }
-//             })
-//         }
-//         else {
-//             // res.send({ message: "No orders placed yet !" })
-//             console.log('no orders');
-//         }
-//     }
-//     catch (error) {
-//         console.log(error);
-//         // res.send({ message: 'Internal server error', error })
-//     }
-//     finally {
-//         client.close()
-//     }
-// }, 2000)
+setTimeout(async function (req, res) {
+    var orderId
+    let serviceRunDate = new Date().getDate()
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = client.db('Pujari_JCB_Spares') // it will connect without any promise
+        let orders = await db.collection('Orders').find({}).toArray()
+        if (orders.length) {
+            orders.forEach((order) => {
+                orderId = order.orderId
+                let orderDate = new Date(order.date).getDate()
+                let dateDiff = serviceRunDate - orderDate;
+                if (dateDiff > 4) {
+                    changeStatus()
+                }
+            })
+        }
+        else {
+            res.send({ message: "No orders placed yet !" })
+        }
+        async function changeStatus() {
+            let changedStatus = await db.collection('Orders').updateOne({ orderId: orderId }, { $set: { delivered: true, deliveryDate: new Date().toISOString() } })
+            console.log(changedStatus);
+        }
+    }
+    catch (error) {
+        // console.log(error);
+        res.send({ message: 'Internal server error', error })
+    }
+}, 86400000)
 
 app.listen(port, () => { console.log(`App listening on ${port}`) })
