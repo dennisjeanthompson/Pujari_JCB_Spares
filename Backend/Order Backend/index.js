@@ -14,13 +14,29 @@ const nodemailer = require('nodemailer')
 app.get('/getAllProducts', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        const db = await client.db('Pujari_JCB_Spares')
+        const db = client.db('Pujari_JCB_Spares')
         let allProducts = await db.collection('All_Products').find().toArray()
         res.status(200).send(allProducts)
     }
     catch (error) {
         console.log(error);
         res.status(500).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
+// update product info
+app.put('/updateProduct/:productId', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = client.db('Pujari_JCB_Spares')
+        await db.collection('All_Products').updateOne({ productId: req.params.productId }, { $set: req.body })
+        res.status(200).send({ message: 'Product updated successfully' })
+    }
+    catch (error) {
+        res.status(400).send({ message: 'Internal server error', error })
     }
     finally {
         client.close()
@@ -35,7 +51,7 @@ app.get('/', async (req, res) => {
         let startDateTime = req.query.startDateTime
         let endDateTime = req.query.endDateTime
 
-        const db = await client.db('Pujari_JCB_Spares')
+        const db = client.db('Pujari_JCB_Spares')
 
         // for user name
         if (email !== '' && startDateTime === '' && endDateTime === '') {
@@ -61,7 +77,7 @@ app.get('/', async (req, res) => {
 
         // for user name & date
         else if (email !== '' && startDateTime !== '' && endDateTime !== '') {
-            let orders = await db.collection('Orders').aggregate([{ $match: { email: email, date: { $gte: startDateTime, $lte: req.query.endDateTime } } }]).toArray()
+            let orders = await db.collection('Orders').aggregate([{ $match: { email: email, date: { $gte: startDateTime, $lte: endDateTime } } }]).toArray()
             if (orders.length) {
                 res.status(200).send(orders)
             }
@@ -94,10 +110,12 @@ app.get('/', async (req, res) => {
 app.post('/newOrder', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        const db = await client.db('Pujari_JCB_Spares')
+        const db = client.db('Pujari_JCB_Spares')
         req.body.price = parseInt(req.body.price)
         req.body.orderId = parseInt(req.body.orderId)
         req.body.quantity = parseInt(req.body.quantity)
+        req.body.deliveryCharges = parseInt(req.body.deliveryCharges)
+        req.body.totalAmount = parseInt(req.body.totalAmount)
         await db.collection('Orders').insertOne(req.body)
         res.status(201).send({ message: 'Order placed', data: req.body })
     }
@@ -135,6 +153,8 @@ app.post('/sendEmail', async (req, res) => {
         productName: req.body.name,
         quantity: req.body.quantity,
         price: req.body.price,
+        deliveryCharges: req.body.deliveryCharges,
+        totalAmount: req.body.totalAmount,
         address: req.body.address,
         orderDate: orderDate,
         expectedDeliveryDate: expectedDeliveryDate
@@ -162,6 +182,8 @@ app.post('/sendEmail', async (req, res) => {
                             <td>Product Name</td>
                             <td>Quantity</td>
                             <td>Price</td>
+                            <td>Delivery charges</td>
+                            <td>Total amount</td>
                             <td>Address</td>
                             <td>Order date</td>
                             <td>Expected delivery date</td>
@@ -175,6 +197,8 @@ app.post('/sendEmail', async (req, res) => {
                         <td>${emailData.productName}</td>
                         <td>${emailData.quantity}</td>
                         <td>${emailData.price}</td>
+                        <td>${emailData.deliveryCharges}</td>
+                        <td>${emailData.totalAmount}</td>
                         <td>${emailData.address}</td>
                         <td>${emailData.orderDate}</td>
                         <td>${emailData.expectedDeliveryDate}</td>
@@ -191,7 +215,7 @@ app.post('/sendEmail', async (req, res) => {
 app.get('/getOrders/:email', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        const db = await client.db('Pujari_JCB_Spares')
+        const db = client.db('Pujari_JCB_Spares')
         let order = await db.collection('Orders').aggregate([{ $match: { email: req.params.email } }]).toArray()
         if (order.length) {
             res.status(200).send(order)
@@ -213,7 +237,7 @@ app.get('/getOrders/:email', async (req, res) => {
 app.delete('/cancleOrder/:orderId', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        const db = await client.db('Pujari_JCB_Spares')
+        const db = client.db('Pujari_JCB_Spares')
         let order = await db.collection('Orders').deleteOne({ _id: mongodb.ObjectId(req.params.orderId) })
         res.status(200).send({ message: 'order cancelled' })
 
