@@ -32,6 +32,9 @@ app.put('/updateProduct/:productId', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = client.db('Pujari_JCB_Spares')
+        req.params.productId = parseInt(req.params.productId)
+        req.body.productPrice = parseInt(req.body.productPrice)
+        req.body.productDeliveryCharges = parseInt(req.body.productDeliveryCharges)
         await db.collection('All_Products').updateOne({ productId: req.params.productId }, { $set: req.body })
         res.status(200).send({ message: 'Product updated successfully' })
     }
