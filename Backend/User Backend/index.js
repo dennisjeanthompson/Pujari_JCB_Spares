@@ -14,11 +14,7 @@ app.get('', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
         const db = await client.db('Pujari_JCB_Spares')
-        if (req.query.email) {
-            let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
-            res.status(200).send(user)
-        }
-        else {
+        if (req.query.email === '') {
             let allUsers = await db.collection('All_Users').aggregate([]).toArray()
             if (allUsers.length) {
                 res.status(200).send(allUsers)
@@ -26,6 +22,10 @@ app.get('', async (req, res) => {
             else {
                 res.send({ message: "No Users Found" })
             }
+        }
+        else {
+            let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
+            res.status(200).send(user)
         }
     }
     catch (error) {
@@ -99,17 +99,31 @@ app.put('/updateUser/:email', async (req, res) => {
 })
 
 // user login
-app.get('/login/:email/:password', async (req, res) => {
+app.get('/login', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        const db = await client.db('Pujari_JCB_Spares')
-        let user = await db.collection('All_Users').aggregate([{ $match: { email: req.params.email, password: req.params.password } }]).toArray()
-        if (user.length !== 0) {
-            res.status(200).send({ message: 'Login Successful', data: user })
+        const db = client.db('Pujari_JCB_Spares')
+        if (req.query.password === undefined) {
+            console.log('google login');
+            let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
+            if (user.length !== 0) {
+                res.status(200).send({ message: 'Login Successful', data: user })
+            }
+            else {
+                res.send({ message: 'Invalid credentials' })
+            }
         }
         else {
-            res.send({ message: 'Invalid credentials' })
+            console.log('not google login');
+            let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email, password: req.query.password } }]).toArray()
+            if (user.length !== 0) {
+                res.status(200).send({ message: 'Login Successful', data: user })
+            }
+            else {
+                res.send({ message: 'Invalid credentials' })
+            }
         }
+
     }
     catch (error) {
         res.status(400).send({ message: 'Internal server error', error })
@@ -118,6 +132,8 @@ app.get('/login/:email/:password', async (req, res) => {
         client.close()
     }
 })
+
+// 
 
 // delete user
 app.delete('/deleteUser/:email', async (req, res) => {
