@@ -10,12 +10,12 @@ const client = new MongoClient(dbUrl)
 const port = 6500
 
 // getting all users
-app.get('', async (req, res) => {
+app.get('/', async (req, res) => {
     const client = await MongoClient.connect(dbUrl)
     try {
-        const db = await client.db('Pujari_JCB_Spares')
-        if (req.query.email === '') {
-            let allUsers = await db.collection('All_Users').aggregate([]).toArray()
+        const db = client.db('Pujari_JCB_Spares')
+        if (req.query.email === undefined) {
+            let allUsers = await db.collection('All_Users').find().toArray()
             if (allUsers.length) {
                 res.status(200).send(allUsers)
             }
@@ -36,6 +36,34 @@ app.get('', async (req, res) => {
         client.close()
     }
 })
+
+// app.get('/', async (req, res) => {
+//     const client = await MongoClient.connect(dbUrl)
+//     try {
+//         const db = client.db('Pujari_JCB_Spares')
+//         // if (req.query.email === '') {
+//             let allUsers = await db.collection('All_Users').find().toArray()
+//             if (allUsers.length) {
+//                 // console.log(allUsers);
+//                 res.status(200).send(allUsers)
+//             }
+//             else {
+//                 res.send({ message: "No Users Found" })
+//             }
+//         // }
+//         // else {
+//         //     let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
+//         //     res.status(200).send(user)
+//         // }
+//     }
+//     catch (error) {
+//         console.log(error);
+//         res.status(500).send({ message: 'Internal server error', error })
+//     }
+//     finally {
+//         client.close()
+//     }
+// })
 
 // creating new user
 app.post('/signup', async (req, res) => {
@@ -75,7 +103,7 @@ app.put('/changePassword/:email/:securityCode', async (req, res) => {
         }
     }
     catch (error) {
-        res.status(400).send({ message: 'Internal server error', error })
+        res.status(500).send({ message: 'Internal server error', error })
     }
     finally {
         client.close()
@@ -104,7 +132,7 @@ app.get('/login', async (req, res) => {
     try {
         const db = client.db('Pujari_JCB_Spares')
         if (req.query.password === undefined) {
-            console.log('google login');
+            // console.log('google login');
             let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email } }]).toArray()
             if (user.length !== 0) {
                 res.status(200).send({ message: 'Login Successful', data: user })
@@ -114,7 +142,7 @@ app.get('/login', async (req, res) => {
             }
         }
         else {
-            console.log('not google login');
+            // console.log('not google login');
             let user = await db.collection('All_Users').aggregate([{ $match: { email: req.query.email, password: req.query.password } }]).toArray()
             if (user.length !== 0) {
                 res.status(200).send({ message: 'Login Successful', data: user })
@@ -123,10 +151,9 @@ app.get('/login', async (req, res) => {
                 res.send({ message: 'Invalid credentials' })
             }
         }
-
     }
     catch (error) {
-        res.status(400).send({ message: 'Internal server error', error })
+        res.status(500).send({ message: 'Internal server error', error })
     }
     finally {
         client.close()
@@ -145,7 +172,7 @@ app.delete('/deleteUser/:email', async (req, res) => {
         res.status(200).send({ message: 'user deleted' })
     }
     catch (error) {
-        res.status(400).send({ message: 'Internal server error', error })
+        res.status(500).send({ message: 'Internal server error', error })
     }
     finally {
         client.close()
