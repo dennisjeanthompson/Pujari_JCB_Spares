@@ -53,9 +53,7 @@ app.get('/', async (req, res) => {
         let email = req.query.email
         let startDateTime = req.query.startDateTime
         let endDateTime = req.query.endDateTime
-
         const db = client.db('Pujari_JCB_Spares')
-
         // for user name
         if (email !== '' && startDateTime === '' && endDateTime === '') {
             let orders = await db.collection('Orders').aggregate([{ $match: { email: email } }]).toArray()
@@ -66,7 +64,6 @@ app.get('/', async (req, res) => {
                 res.send({ message: "No orders placed yet !" })
             }
         }
-
         // for date
         else if (email === '' && startDateTime !== '' && endDateTime !== '') {
             let orders = await db.collection('Orders').aggregate([{ $match: { date: { $gte: startDateTime, $lte: endDateTime } } }]).toArray()
@@ -77,7 +74,6 @@ app.get('/', async (req, res) => {
                 res.send({ message: "No orders placed yet !" })
             }
         }
-
         // for user name & date
         else if (email !== '' && startDateTime !== '' && endDateTime !== '') {
             let orders = await db.collection('Orders').aggregate([{ $match: { email: email, date: { $gte: startDateTime, $lte: endDateTime } } }]).toArray()
@@ -88,7 +84,6 @@ app.get('/', async (req, res) => {
                 res.send({ message: "No orders placed yet !" })
             }
         }
-
         // all orders
         else if (email === '' && startDateTime === '' && endDateTime === '') {
             let orders = await db.collection('Orders').aggregate([{ $sort: { date: -1 } }]).toArray()
@@ -145,10 +140,10 @@ app.post('/sendEmail', async (req, res) => {
             }
             return result;
         }
-        orderId = await generateString(10);
+        orderId = generateString(10);
     }
     let orderDate = new Date(req.body.date).toLocaleString()
-    let expectedDeliveryDate = new Date(new Date(req.body.date).setDate(new Date(req.body.date).getDate() + 4)).toLocaleDateString()
+    let expectedDeliveryDate = new Date(new Date(req.body.date).setDate(new Date(req.body.date).getDate() + 5)).toLocaleDateString()
     console.log(req.body);
     const emailData = {
         text: `Congratulations, Your order has been placed. You'll get your product within four days. Thank You !`,
@@ -163,14 +158,13 @@ app.post('/sendEmail', async (req, res) => {
         expectedDeliveryDate: expectedDeliveryDate
     }
     // console.log(emailData);
-    const transporter = await nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
             user: 'rpujari1144@gmail.com',
             pass: 'roaklhqwpybvxjzi'
         }
     });
-
     let info = await transporter.sendMail({
         from: '"Pujari JCB Spares" <pujarijcbspares@gmail.com>', // sender address
         to: req.body.email, // list of receivers
@@ -209,7 +203,6 @@ app.post('/sendEmail', async (req, res) => {
                 </tbody>
             </table>`
     })
-
     console.log("Message sent: ", info.messageId);
     res.json(info)
 })
@@ -254,7 +247,7 @@ app.delete('/cancleOrder/:orderId', async (req, res) => {
     }
 })
 
-setTimeout(async function (req, res) {
+setInterval(async function (req, res) {
     var orderId
     let serviceRunDate = new Date().getDate()
     const client = await MongoClient.connect(dbUrl)
