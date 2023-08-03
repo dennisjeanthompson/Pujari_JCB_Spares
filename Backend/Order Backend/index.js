@@ -126,6 +126,60 @@ app.post('/newOrder', async (req, res) => {
     }
 })
 
+// getting orders data of user
+app.get('/getOrders/:email', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = client.db('Pujari_JCB_Spares')
+        let order = await db.collection('Orders').aggregate([{ $match: { email: req.params.email } }]).toArray()
+        if (order.length) {
+            res.status(200).send(order)
+        }
+        else {
+            res.send({ message: 'No order placed' })
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
+// cancle order
+app.delete('/cancleOrder/:orderId', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = client.db('Pujari_JCB_Spares')
+        let order = await db.collection('Orders').deleteOne({ _id: mongodb.ObjectId(req.params.orderId) })
+        res.status(200).send({ message: 'order cancelled' })
+    }
+    catch (error) {
+        res.status(500).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
+// delete product
+app.delete('/deleteProduct/:productId', async (req, res) => {
+    const client = await MongoClient.connect(dbUrl)
+    try {
+        const db = client.db('Pujari_JCB_Spares')
+        let product = await db.collection('All_Products').deleteOne({ _id: mongodb.ObjectId(req.params.productId) })
+        res.status(200).send({ message: 'Product deleted' })
+    }
+    catch (error) {
+        res.status(500).send({ message: 'Internal server error', error })
+    }
+    finally {
+        client.close()
+    }
+})
+
 // send email after order placed
 app.post('/sendEmail', async (req, res) => {
     let orderId
@@ -207,75 +261,34 @@ app.post('/sendEmail', async (req, res) => {
     res.json(info)
 })
 
-// getting orders data of user
-app.get('/getOrders/:email', async (req, res) => {
-    const client = await MongoClient.connect(dbUrl)
-    try {
-        const db = client.db('Pujari_JCB_Spares')
-        let order = await db.collection('Orders').aggregate([{ $match: { email: req.params.email } }]).toArray()
-        if (order.length) {
-            res.status(200).send(order)
-        }
-        else {
-            res.send({ message: 'No order placed' })
-        }
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send({ message: 'Internal server error', error })
-    }
-    finally {
-        client.close()
-    }
-})
-
-// cancle order
-app.delete('/cancleOrder/:orderId', async (req, res) => {
-    const client = await MongoClient.connect(dbUrl)
-    try {
-        const db = client.db('Pujari_JCB_Spares')
-        let order = await db.collection('Orders').deleteOne({ _id: mongodb.ObjectId(req.params.orderId) })
-        res.status(200).send({ message: 'order cancelled' })
-
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send({ message: 'Internal server error', error })
-    }
-    finally {
-        client.close()
-    }
-})
-
-setInterval(async function (req, res) {
-    var orderId
-    let serviceRunDate = new Date().getDate()
-    const client = await MongoClient.connect(dbUrl)
-    try {
-        const db = client.db('Pujari_JCB_Spares') // it will connect without any promise
-        let orders = await db.collection('Orders').find({}).toArray()
-        if (orders.length) {
-            orders.forEach((order) => {
-                orderId = order.orderId
-                let orderDate = new Date(order.date).getDate()
-                let dateDiff = serviceRunDate - orderDate;
-                if (dateDiff > 4) {
-                    changeStatus()
-                }
-            })
-        }
-        else {
-            res.send({ message: "No orders placed yet !" })
-        }
-        async function changeStatus() {
-            let changedStatus = await db.collection('Orders').updateOne({ orderId: orderId }, { $set: { delivered: true, deliveryDate: new Date().toISOString() } })
-            console.log(changedStatus);
-        }
-    }
-    catch (error) {
-        // console.log(error);
-        res.send({ message: 'Internal server error', error })
-    }
-}, 86400000)
+// setInterval(async function (req, res) {
+//     var orderId
+//     let serviceRunDate = new Date().getDate()
+//     const client = await MongoClient.connect(dbUrl)
+//     try {
+//         const db = client.db('Pujari_JCB_Spares') // it will connect without any promise
+//         let orders = await db.collection('Orders').find().toArray()
+//         if (orders.length) {
+//             orders.forEach((order) => {
+//                 orderId = order.orderId
+//                 let orderDate = new Date(order.date).getDate()
+//                 let dateDiff = serviceRunDate - orderDate;
+//                 if (dateDiff > 4) {
+//                     changeStatus()
+//                 }
+//             })
+//         }
+//         else {
+//             res.send({ message: "No orders placed yet !" })
+//         }
+//         async function changeStatus() {
+//             let changedStatus = await db.collection('Orders').updateOne({ orderId: orderId }, { $set: { delivered: true, deliveryDate: new Date().toISOString() } })
+//             console.log(changedStatus);
+//         }
+//     }
+//     catch (error) {
+//         res.status(500).send({ message: 'Internal server error', error })
+//     }
+// }, 60000)
 
 app.listen(port, () => { console.log(`App listening on ${port}`) })
