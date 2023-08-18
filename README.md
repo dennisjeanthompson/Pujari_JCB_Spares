@@ -25,3 +25,4 @@ An e-commerce website to order JCB spare parts
     - Search functionality for orders with respect to date and user name
     - Excel sheet download functionality
     - Email acknowledgement after getting order placed
+    - session management, hashed password functionality, user authorization
