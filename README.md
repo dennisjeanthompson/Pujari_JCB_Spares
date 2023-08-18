@@ -17,6 +17,7 @@ An e-commerce website to order JCB spare parts
   - Pujari JCB Spares allows users to login, register and update profile
   - User is able to see JCB spare parts and order them
   - User can see their orders in user profile page and have permission to cancle the order
+  - session management, hashed password functionality, user authorization
   
   - Admin page:
     - Admin can see all registered users and have permission to delete the user
@@ -25,4 +26,3 @@ An e-commerce website to order JCB spare parts
     - Search functionality for orders with respect to date and user name
     - Excel sheet download functionality
     - Email acknowledgement after getting order placed
-    - session management, hashed password functionality, user authorization
