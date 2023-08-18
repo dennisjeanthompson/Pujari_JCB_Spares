@@ -1,0 +1,42 @@
+.allProductsMainDiv {
+    margin-top: 200%;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 70px;
+    width: 90%;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.allRecipeMainDiv{
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 50px;
+    margin: 20px 40px 20px 40px;
+}
+
+.productsDiv {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 70px
+}
+
+@media (max-width:400px) {
+    .allProductsMainDiv {
+        display: block;
+        justify-content: center;
+    }
+
+    .allRecipeMainDiv{
+        display: block;
+        margin: 0px;
+    }
+
+    .card{
+        /* margin-top: 20px; */
+    }
+}
