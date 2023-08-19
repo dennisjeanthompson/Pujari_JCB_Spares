@@ -1,0 +1,121 @@
+.editDeleteLogo:hover {
+    cursor: pointer;
+}
+
+/* all users style start */
+.allUsersButtonsDiv {
+    display: flex;
+    justify-content: space-evenly;
+    width: 40%;
+}
+
+.allUsersSearchButtonDiv {
+    margin-top: 3px;
+    max-width: fit-content
+}
+
+.allUsersRefreshButtonDiv {
+    margin-top: 2px;
+    max-width: fit-content
+}
+
+.allUsersExcelButtonDiv {
+    margin-top: 3px;
+}
+
+.allUsersTableDiv {
+    width: 70%;
+    height: 230px;
+    overflow: auto;
+    position: sticky;
+    top: 0
+}
+
+/* all users style end */
+
+/* pending orders style start */
+.pendingOrdersButtonsDiv {
+    display: flex;
+    justify-content: space-evenly;
+    width: 55%
+}
+
+.pendingOrdersTableDiv {
+    width: 100%;
+    height: 325px;
+    overflow: auto;
+    position: sticky;
+    top: 0
+}
+
+.calenderDiv{
+    width: fit-content
+}
+/* pending orders style end */
+
+.allProductsDiv {
+    height: 800px;
+    overflow: auto;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 70px;
+    padding: 20px;
+}
+
+@media (max-width:400px) {
+
+    /* all users style start */
+    .allUsersButtonsDiv {
+        display: block;
+        justify-content: space-evenly;
+        width: 100%;
+    }
+
+    .usernameSelectDiv {
+        width: 50%;
+    }
+
+    .allUsersSearchButtonDiv {
+        margin-top: 10px;
+    }
+
+    .allUsersRefreshButtonDiv {
+        margin-top: 10px;
+    }
+
+    .allUsersExcelButtonDiv {
+        margin-top: 0px;
+    }
+
+    .allUsersTableDiv {
+        width: 100%;
+        height: 230px;
+        overflow: auto;
+        position: sticky;
+        top: 0
+    }
+    /* all users style end */
+
+    /* pending orders style start */
+    .pendingOrdersButtonsDiv {
+        display: block;
+    }
+
+    .calenderDiv{
+        margin-top: 10px;
+        height: 100%;
+        width: 100%;
+    }
+    /* pending orders style end */
+
+    .allProductsDiv {
+        height: 800px;
+        overflow: auto;
+        display: block;
+        padding: 20px;
+
+    }
+
+
+}
