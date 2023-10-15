@@ -14,6 +14,7 @@ function Login() {
 
     useEffect(() => {
         getAllProducts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     async function getAllProducts() {
