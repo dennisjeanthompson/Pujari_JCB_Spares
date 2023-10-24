@@ -45,7 +45,7 @@ router.get('/getOrders/:email', async (req, res) => {
     try {
         const db = client.db(dbName)
         const collection = db.collection('Orders')
-        let allOrders = await collection.aggregate([{ $match: { email: req.params.email } }]).toArray()
+        let allOrders = await collection.aggregate([{ $match: { email: req.params.email, delivered: false } }]).toArray()
         if (allOrders.length) {
             res.status(200).send(allOrders)
         }
@@ -131,7 +131,7 @@ router.delete('/cancleOrder/:orderId', validate, async (req, res) => {
         const db = client.db(dbName)
         const collection = db.collection('Orders')
         let deletedOrder = await collection.deleteOne({ orderId: parseInt(req.params.orderId) })
-        console.log(deletedOrder);
+        // console.log(deletedOrder);
         if (deletedOrder.deletedCount === 1) {
             res.status(200).send({ message: 'order cancelled' })
         }
@@ -242,6 +242,41 @@ router.post('/sendEmail', async (req, res) => {
     }
     catch (error) {
         res.status(500).send({ message: 'Internal server error', error })
+    }
+})
+
+// not delivered products
+router.get('/get-delivered-orders', async (req, res) => {
+    const client = new MongoClient(dbUrl)
+    await client.connect()
+    try {
+        const db = client.db(dbName)
+        const collection = db.collection('Orders')
+        let usersOrders = await collection.aggregate([{ $match: { email: req.query.email, delivered: false } }]).toArray()
+        if (usersOrders.length) {
+            usersOrders.forEach((e) => {
+                let dateDiff = (new Date(e.date).getDate()) - (new Date().getDate())
+                if (dateDiff > 4) {
+                    updateStatus(e.orderId, e.date)
+                }
+            })
+            async function updateStatus(orderId, date) {
+                let nxtDate = new Date(date).getDate() + 4
+                console.log(nxtDate);
+                let newDate = new Date(new Date().setDate(nxtDate))
+                let update = {
+                    delivered: true,
+                    orderDeliveredDate: new Date(newDate).toISOString()
+                }
+                await collection.updateOne({ orderId: orderId }, { $set: update })
+            }
+            let data = await collection.aggregate([{ $match: { email: req.query.email, delivered: true } }]).toArray()
+            res.status(200).send({ message: 'Users delivered orders data', data: data })
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error', error: error })
     }
 })
 
